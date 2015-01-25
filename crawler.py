@@ -18,11 +18,27 @@ def crawl():
             link_href = "http://aits.encs.concordia.ca/oldsite/resources/schedules/courses/" + link_href
             crawl_class(link_href)
 
+
+# --------------------------------------------------------
+# Go get info for 1 course
 def crawl_class(class_url):
+    # init
     source = requests.get(class_url)
     plain_text = source.text
     soup = BeautifulSoup(plain_text)
-    print(soup.findAll('h1')[0].text)
+
+    # title
+    course_title = soup.findAll('h1')[0].text
+    # professors
+    print course_title
+    rows = soup.findAll('table', { 'class': 'table_1'})[1].find('tbody').findAll('tr')
+    print "{} rows".format(len(rows))
+    """
+    for row in rows:
+        for column in row.find_all('td'):
+            print column.text
+    print ""
+    """
 
 
 # --------------------------------------------------------
