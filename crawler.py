@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+# --------------------------------------------------------
+# Go get all the course information
 def crawl():
     url = "http://aits.encs.concordia.ca/oldsite/resources/schedules/courses/?y=2014&s=2"
     source = requests.get(url)
@@ -14,10 +16,17 @@ def crawl():
         # only if the link is for a class do we display it
         if link_href.startswith('details'):
             link_href = "http://aits.encs.concordia.ca/oldsite/resources/schedules/courses/" + link_href
-            print( "{} {}".format(link.text, link_href) )
-crawl()
+            crawl_class(link_href)
+
+def crawl_class(class_url):
+    source = requests.get(class_url)
+    plain_text = source.text
+    soup = BeautifulSoup(plain_text)
+    print(soup.findAll('h1')[0].text)
 
 
+# --------------------------------------------------------
+# Get information about a professor from rate my professor
 def ratemyprof():
     # used to find the professors at concordia with the prefix
     ratemyprofessor = ("http://search.mtvnservices.com/typeahead/suggest/?solrformat=true"
@@ -31,3 +40,6 @@ def ratemyprof():
 
     # go to the professor's page
     prof_page = "http://www.ratemyprofessors.com/ShowRatings.jsp?tid="
+
+
+crawl()
