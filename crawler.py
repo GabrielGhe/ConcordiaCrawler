@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from bs4 import BeautifulSoup
 
 # --------------------------------------------------------
@@ -29,26 +29,25 @@ def crawl_class(class_url):
 
     # title
     course_title = soup.findAll('h1')[0].text
-    # professors
     print course_title
+
+    # sections with teachers
     rows = soup.findAll('table', { 'class': 'table_1'})[1].find('tbody').findAll('tr')
-    print "{} rows".format(len(rows))
-    """
     for row in rows:
         for column in row.find_all('td'):
             print column.text
     print ""
-    """
+    
 
 
 # --------------------------------------------------------
 # Get information about a professor from rate my professor
-def ratemyprof():
+def ratemyprof(prof = ""):
     # used to find the professors at concordia with the prefix
-    ratemyprofessor = ("http://search.mtvnservices.com/typeahead/suggest/?solrformat=true"
+    professor_url = ("http://search.mtvnservices.com/typeahead/suggest/?solrformat=true"
                        "&rows=10&callback=noCB&prefix=")
-    ratemyprofessor += "aiman"
-    ratemyprofessor += ("&qf=teacherfullname_t%5E1000+teacherfullname_autosuggest"
+    professor_url += prof
+    professor_url += ("&qf=teacherfullname_t%5E1000+teacherfullname_autosuggest"
                         "&bf=pow(total_number_of_ratings_i%2C2.1)&defType=edismax&siteName=rmp"
                         "&group=off&group.field=content_type_s&group.limit=20"
                         "&fq=content_type_s%3ATEACHER&fq=schoolid_s%3A1422"
@@ -56,6 +55,10 @@ def ratemyprof():
 
     # go to the professor's page
     prof_page = "http://www.ratemyprofessors.com/ShowRatings.jsp?tid="
+    resp = requests.get(professor_url)
+    data = json.loads(resp.text[5:-2])
+    first_match = data["response"]["docs"][0]["pk_id"]
 
 
-crawl()
+#crawl()
+ratemyprof("aiman+hanna")
